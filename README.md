@@ -108,30 +108,53 @@ export default defineUserConfig({
 
 插件通过 VuePress 的 `rootComponents` 和 `<ClientOnly>` 挂载，仅在 `onMounted` 钩子中执行 DOM 初始化，SSR 构建绝对安全。挂件自动监听 `route.fullPath`，换页后自动重置阅读里程碑并优雅销毁清理，杜绝内存累积。
 
-### 载入自定义主题包
+### 🎨 零门槛无痛使用任意桌宠（Codex / Clawd-on-desk 外部主题）
 
-将下载的 Codex 或 Clawd 主题文件夹放入博客的公共静态目录 `.vuepress/public/pets/`：
+本插件原生完全兼容 **Codex-Pet** 与 **Clawd-on-desk** 两种主流桌宠规范。无论读者或博主在网上、本地或者应用商店（如 `clawd-on-desk` 客户端）下载了什么心仪的桌宠模型，**只需 2 步**，无需发版，无需修改一行底层代码即可直接在博客中使用：
 
+#### 第一步：将桌宠文件夹放入博客的 `public` 目录
+
+将你在电脑上下载或解压的主题文件夹（例如 `codex-pet-capybara-lulu`）重命名为一个简短名字（如 `lulu`），直接复制到你的博客公共静态目录中：
+
+- **VuePress 2 博客**：复制到 `docs/.vuepress/public/themes/lulu/`
+- **VitePress 博客**：复制到 `docs/public/themes/lulu/`
+
+文件夹结构示例（Codex 单图集模式 或 Clawd 多 SVG 切片模式均自动兼容）：
 ```text
-.vuepress/public/pets/
-├─ my-codex-pet/
-│  ├─ pet.json
-│  └─ spritesheet.webp
-└─ my-clawd-pet/
-   ├─ theme.json
-   ├─ idle.svg
-   └─ ...
+docs/.vuepress/public/themes/lulu/
+├── theme.json (或 pet.json)
+├── spritesheet.webp
+└── *.svg (若有切片动作)
 ```
+> 💡 **提示**：如果主题包内部有 `assets/` 子目录存放 SVG 或 Spritesheet，只需确保 `theme.json` 引用的图片文件与 `theme.json` 在同一目录下（将 `assets` 里的文件移到外面即可）。
 
-在配置中引用：
+#### 第二步：在博客配置中声明主题路径
+
+在博客的配置文件（如 `.vuepress/config.ts`）中填入以绝对根路径 `/themes/...` 开头的清单路径即可：
 
 ```ts
-codexClawdPetPlugin({
-  themes: ['/pets/my-codex-pet/pet.json', '/pets/my-clawd-pet/theme.json'],
+import { codexClawdPetPlugin } from 'vuepress-plugin-codex-clawd-pet';
+
+export default defineUserConfig({
+  plugins: [
+    codexClawdPetPlugin({
+      // 方式 1：直接作为默认桌宠
+      theme: '/themes/lulu/theme.json', // 或 '/themes/lulu/pet.json'
+
+      // 方式 2：注册多个桌宠，支持读者前台在工具栏一键自由切换！
+      // themes: [
+      //   'capybara',                      // 内置原创默认：柚子
+      //   'moon-capybara',                 // 内置原创：月白
+      //   '/themes/lulu/theme.json',       // 自定义外部桌宠：水豚噜噜
+      //   '/themes/my-cat/pet.json',        // 另一个外部桌宠：小猫
+      // ],
+      sound: true, // 开启治愈互动音效
+    }),
+  ],
 });
 ```
 
-*注：VuePress 会为 `/pets/...` 自动补全站点的 `base` 子路径，切勿手动重复拼接。*
+*注：VuePress 会在构建打包时自动将 `/themes/...` 映射为博客站点的公共静态资产，无论本地预览还是推送到 GitHub Actions / Cloudflare 远端部署，全自动完美加载！*
 
 ---
 
