@@ -11,13 +11,21 @@
 [![tests](https://img.shields.io/badge/tests-113%20passed-success.svg?style=flat-square)](TESTING.md)
 [![gzip size](https://img.shields.io/badge/gzip%20core-~9.6%20KB-brightgreen.svg?style=flat-square)](#体积性能与安全)
 
-[在线预览 (Playground)](#playground-展示与调试) · [快速上手](#vuepress-2-接入) · [独立核心 API](#独立核心-vanilla-ts) · [配置项详解](#配置选项) · [主题兼容规范](#主题兼容规范)
+[在线预览 (Playground)](#playground) · [快速上手](#quick-start) · [独立核心 API](#core-api) · [配置项详解](#options) · [主题兼容规范](#theme-spec)
 
 </div>
 
 ---
 
-## 🌟 为什么选择 Codex-Clawd-Pet？（对比 Live2D）
+<div align="center">
+  <img src="docs/assets/preview-light.png" alt="Playground 浅色模式预览 (水豚噜噜)" width="880" />
+  <p><em>☀️ 浅色模式：暖黄 + 南瓜橙 + 叶绿 主题，实时交互与状态控制室</em></p>
+  <br />
+  <img src="docs/assets/preview-dark.png" alt="Playground 深色模式预览 (森林绿夜间)" width="880" />
+  <p><em>🌙 深色模式：森林绿夜间暗色平滑自适应，气泡与小跑步拖拽动画</em></p>
+</div>
+
+---
 
 传统的 `vuepress-plugin-oh-my-live2d` 虽然成熟，但 Live2D 模型普遍体积庞大（单模型 5MB ~ 30MB），且依赖 WebGL / Pixi.js 重型渲染引擎，极易导致个人博客首屏加载变慢、移动端发热卡顿。
 
@@ -54,6 +62,7 @@ npm install /path/to/vuepress-plugin-codex-clawd-pet-0.1.0.tgz
 
 ---
 
+<span id="playground"></span>
 ## 🎮 Playground 展示与调试
 
 本地开发预览页默认演示用户提供的 **水豚噜噜** 🎃（南瓜帽 / 绿色小包），同时展示中央实时预览区与右下角可交互挂件：
@@ -68,6 +77,7 @@ npm install /path/to/vuepress-plugin-codex-clawd-pet-0.1.0.tgz
 
 ---
 
+<span id="quick-start"></span>
 ## 📖 VuePress 2 接入
 
 在 VuePress 配置文件中引入插件（例如 `.vuepress/config.ts`）：
@@ -125,6 +135,7 @@ codexClawdPetPlugin({
 
 ---
 
+<span id="core-api"></span>
 ## 🧩 独立核心 (Vanilla TS)
 
 该插件的核心渲染运行时与 VuePress 完全解耦，支持在任意普通网页、原生 HTML、React 或 VitePress 项目中独立运行：
@@ -169,6 +180,7 @@ pet.destroy(); // 实例销毁与事件彻底解绑（幂等）
 
 ---
 
+<span id="options"></span>
 ## ⚙️ 配置选项（Options）
 
 完整类型定义请参阅 [`src/core/types.ts`](src/core/types.ts)。
@@ -213,6 +225,7 @@ codexClawdPetPlugin({
 
 ---
 
+<span id="theme-spec"></span>
 ## 🎨 主题兼容规范
 
 ### 1. 自定义通用图集规范
