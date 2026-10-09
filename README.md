@@ -298,7 +298,9 @@ codexClawdPetPlugin({
 <span id="theme-spec"></span>
 ## 🎨 主题兼容规范
 
-### 1. 自定义通用图集规范
+### 1. 自定义通用图集规范（推荐生产使用）
+
+为了在所有现代浏览器中获得最丝滑、零卡顿且不产生额外 HTTP 请求的渲染性能，**强烈推荐使用单一 WebP 雪碧图（Spritesheet）规范**（与内置主题 `moon` / `yuzu` 一致）：
 
 ```json
 {
@@ -308,20 +310,20 @@ codexClawdPetPlugin({
   "frameWidth": 192,
   "frameHeight": 208,
   "columns": 8,
-  "rows": 2,
-  "viewBox": [0, 0, 192, 208],
+  "rows": 9,
   "fps": 8,
   "actions": {
-    "idle": { "frames": [0, 1, 2, 3] },
-    "thinking": { "frames": [8, 9, 10, 11], "duration": 3000 },
-    "happy": { "frames": [4, 5, 6], "frameDurations": [140, 140, 280], "loop": false }
+    "idle": { "frames": [0, 1, 2, 3, 4, 5], "frameDurations": [280, 110, 110, 140, 140, 320] },
+    "running": { "frames": [56, 57, 58, 59, 60, 61] },
+    "thinking": { "frames": [64, 65, 66, 67, 68, 69] },
+    "happy": { "frames": [32, 33, 34, 35, 36], "loop": false }
   }
 }
 ```
 
-- **帧序列优先**：帧索引起始于 0，支持跨行映射、倒序排列与指定帧持续时间 `frameDurations`。
+- **帧序列与分行**：单张雪碧图平铺排列，帧索引自左往右、自上而下编号（起始于 0）。支持跨行映射、自定义单帧保持毫秒数 `frameDurations`。
 - **状态调度器机制**：支持非负数 `priority` 与 `interruptible: false` 优先级抢占调度，不可打断动作执行期间自动丢弃低优触发，防止疯狂连点造成状态混乱。
-- **渲染零计算**：基于 SVG 视口映射与负原点 ViewBox，缩放和偏移完全交给浏览器图形管线，无需 JS 逐帧计算位移。
+- **渲染零计算**：基于 SVG 视口映射与负原点 ViewBox，缩放和偏移完全交给浏览器图形管线，无需 JS 逐帧计算位移，杜绝独立 SVG 动图在 Shadow DOM 容器中的尺寸坍缩与跨域解析延迟。
 
 ### 2. Codex `pet.json` 官方规范对齐
 
@@ -339,9 +341,9 @@ codexClawdPetPlugin({
 | `thinking` | Row 8 | 思考审查状态（review） |
 | `sleeping` | 静态首帧回退 | 兼容回退 |
 
-### 3. Clawd `theme.json` 规范对齐
+### 3. Clawd `theme.json` 独立动图兼容（兼容降级模式）
 
-支持 `schemaVersion: 1`、`viewBox: { x, y, width, height }`、`states` 与 `reactions` 事件驱动映射。
+支持 `schemaVersion: 1`、`viewBox: { x, y, width, height }`、`states` 与 `reactions` 事件驱动映射。该模式下各状态使用独立 `.svg` 动图文件，仅推荐在无法生成单一雪碧图时作为兼容降级手段使用。
 
 ---
 
