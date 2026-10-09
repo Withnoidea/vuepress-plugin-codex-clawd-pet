@@ -1,0 +1,10 @@
+node_modules
+dist
+playground/dist
+src/themes/**/*.svg
+src/themes/**/*.json
+.artifacts
+package-lock.json
+tests/vuepress/.vuepress/.temp
+tests/vuepress/.vuepress/.cache
+tests/vuepress/.vuepress/dist
