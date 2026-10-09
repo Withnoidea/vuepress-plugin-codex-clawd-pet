@@ -41,24 +41,27 @@
 
 ## 🚀 快速上手
 
-### 1. 本地开始与调试
+### 1. 安装插件
+
+推荐通过包管理器直接安装到你的博客或 VuePress 项目开发依赖中：
 
 ```sh
-npm install
-npm run dev                  # Vite 预览（默认端口 5173，终端显示实际 URL）
-npm run check                # 严格 TypeScript 检查
-npm test                     # 运行 113 项全套单元与 DOM 集成测试
-npm run test:coverage        # V8 覆盖率与逐文件门禁 → coverage/
-npm run build                # ESM + 声明文件 + 主题资源 → dist/
-npm run build:playground     # 可静态托管的桌宠预览站
-npm run docs:build           # 真实 VuePress SSR + /pet-docs/ 子路径构建验证
-npm pack                     # 生成本地可安装的 .tgz 安装包
+# pnpm (推荐)
+pnpm add -D vuepress-plugin-codex-clawd-pet
+
+# npm
+npm install -D vuepress-plugin-codex-clawd-pet
+
+# yarn
+yarn add -D vuepress-plugin-codex-clawd-pet
 ```
 
-在本地站点项目中引用：
-```sh
-npm install /path/to/vuepress-plugin-codex-clawd-pet-0.1.0.tgz
-```
+> 💡 **本地调试源码或构建产物**：
+> ```sh
+> npm install && npm run build
+> npm pack                         # 生成本地 .tgz
+> npm install -D /path/to/vuepress-plugin-codex-clawd-pet-0.1.0.tgz
+> ```
 
 ---
 
@@ -80,6 +83,12 @@ npm install /path/to/vuepress-plugin-codex-clawd-pet-0.1.0.tgz
 <span id="quick-start"></span>
 ## 📖 VuePress 2 接入
 
+### 2. 博客接入配置
+
+插件提供两种接入方式，任选其一均可稳定运行：
+
+#### 方式 A：在 VuePress 配置文件中作为插件引入（推荐：通用官方主题/默认主题）
+
 在 VuePress 配置文件中引入插件（例如 `.vuepress/config.ts`）：
 
 ```ts
@@ -90,6 +99,7 @@ export default defineUserConfig({
   // 保留站点原有的 theme / bundler 配置
   plugins: [
     codexClawdPetPlugin({
+      theme: '/themes/lulu/theme.json', // 外部主题清单，或内置预设 'capybara'
       position: 'bottom-right',
       size: 160,
       offset: { x: 24, y: 20 },
@@ -106,7 +116,44 @@ export default defineUserConfig({
 });
 ```
 
-插件通过 VuePress 的 `rootComponents` 和 `<ClientOnly>` 挂载，仅在 `onMounted` 钩子中执行 DOM 初始化，SSR 构建绝对安全。挂件自动监听 `route.fullPath`，换页后自动重置阅读里程碑并优雅销毁清理，杜绝内存累积。
+#### 方式 B：在客户端配置中手动挂载（推荐：VuePress Plume、Hope 等高度定制化主题）
+
+部分高级定制主题由于布局组件接管与异步渲染机制，可能无法自动渲染插件注入的 `rootComponents`。此时推荐在 `.vuepress/client.ts`（或 `.vuepress/client.js`）中直接通过核心 API 初始化，挂载最轻量、最稳定且兼容 SSR 打包：
+
+```ts
+import { defineClientConfig } from 'vuepress/client';
+import { onMounted } from 'vue';
+import { CodexClawdPet } from 'vuepress-plugin-codex-clawd-pet/core';
+
+export default defineClientConfig({
+  setup() {
+    if (typeof window === 'undefined') return;
+
+    onMounted(() => {
+      // 避免热重载或切页重复挂载
+      if (document.querySelector('.codex-clawd-pet')) return;
+
+      try {
+        const pet = new CodexClawdPet({
+          theme: '/themes/lulu/theme.json',
+          size: 160,
+          position: 'bottom-right',
+          draggable: true,
+          dock: true,
+          toolbar: true,
+          sound: true,
+          offset: { x: 24, y: 20 },
+        });
+        pet.mount(document.body);
+      } catch (err) {
+        console.error('[codex-clawd-pet] 挂载失败:', err);
+      }
+    });
+  },
+});
+```
+
+插件通过 VuePress 的 `rootComponents` 和 `<ClientOnly>` / `onMounted` 挂载，仅在客户端环境下执行 DOM 初始化，SSR 构建绝对安全。挂件自动监听 `route.fullPath`，换页后自动重置阅读里程碑并优雅销毁清理，杜绝内存累积。
 
 ### 🎨 零门槛无痛使用任意桌宠（Codex / Clawd-on-desk 外部主题）
 
